@@ -1,0 +1,114 @@
+# Copyright (c) 2026, the Dart project authors.  Please see the AUTHORS file
+# for details. All rights reserved. Use of this source code is governed by a
+# BSD-style license that can be found in the LICENSE file.
+
+# This is the configuration file for the skill generator.
+# To generate skills, use the following command (from the `tool` directory):
+# dart run skills generate-skill --config ../resources/flutter_skills.yaml --output ../skills
+
+- name: environment-setup-macos
+  description: Set up a macOS environment for Flutter development
+  instructions: |
+    To set up a macOS environment for Flutter development, you need to configure your development
+    environment to run, build, and deploy Flutter applications for macOS devices. This involves
+    setting up tooling, validating your setup, and then you can start developing for macOS.
+
+    First, ensure Flutter is installed and up to date. If you haven't installed Flutter yet, you
+    should follow the "Get started with Flutter" guide.
+
+    For tooling, you will need Xcode. Xcode allows you to run Flutter apps on macOS and compile and
+    debug native Swift and Objective-C code. Install the latest version of Xcode, or update it if
+    you already have it.
+
+    After setting up the tooling, validate your setup by running the `flutter doctor` command in
+    your terminal. This command checks for any issues with your macOS development setup. If there
+    are errors or tasks under the Xcode section, resolve them and run `flutter doctor -v` again to
+    verify the changes. You should also run `flutter devices` to ensure Flutter can find and connect
+    to your macOS device. If everything is set up correctly, you should see at least one entry with
+    "macos" as the platform. If you encounter any setup issues, you can refer to the "Install and
+    setup troubleshooting" guide or reach out to the Flutter community channels.
+
+    Once your macOS desktop development for Flutter is set up, you can continue your Flutter
+    learning journey, test on macOS, or begin expanding integration with macOS. You can also build
+    and deploy to macOS, bind to native macOS code, embed native macOS views, set up app flavors,
+    and use Swift Package Manager. Flutter supports building macOS apps. You can also host a native
+    macOS view and bind to native code.
+  resources:
+    - https://docs.flutter.dev/platform-integration/macos/setup
+    - https://docs.flutter.dev/install/add-to-path
+    - https://docs.flutter.dev/install/troubleshoot
+    - https://docs.flutter.dev/install
+    - https://docs.flutter.dev/install/quick
+    - https://docs.flutter.dev/platform-integration/ios/setup
+    - https://docs.flutter.dev/platform-integration/macos
+
+- name: architecture
+  description: Configure Flutter SDK on the user's machine, setup IDEs, and diagnose CLI errors.
+  instructions: |
+    Architecture is a broad term that can refer to many topics depending on the context. In the
+    context of Flutter, architecture refers to how to structure, organize, and design your Flutter
+    app to scale as project requirements and teams grow. It is an important part of building a
+    maintainable, resilient, and scalable Flutter app. This guide covers app architecture principles
+    and best practices for building Flutter apps.
+
+    Good app architecture provides several benefits to engineering teams and end users. It makes it
+    easier to modify, update, and fix issues over time (maintainability). A well-thought-out
+    application allows more people to contribute to the same codebase concurrently with minimal code
+    conflicts (scalability).
+
+    Common architectural principles include separation of concerns, layered architecture, single
+    source of truth, unidirectional data flow, UI as a function of (immutable) state, extensibility,
+    and testability.
+
+    Flutter applications should be written in layers. Layered architecture is a software design
+    pattern that organizes an application into distinct layers, each with specific roles and
+    responsibilities. Typically, applications are separated into 2 to 3 layers, depending on
+    complexity. The three common layers of app architecture are the UI layer, logic layer, and data
+    layer.
+
+    *   **UI layer** (also known as the 'presentation layer') displays data to the user that is
+        exposed by the business logic layer and handles user interaction. In Flutter, this applies
+        to widgets, which are the basic building blocks of a Flutter user interface. You should
+        write reusable, lean widgets that hold as little logic as possible.
+    *   **Logic layer** (commonly known as the 'domain layer') implements core business logic and
+        facilitates interaction between the data layer and UI layer. This layer is optional and only
+        needs to be implemented if your application has complex business logic that happens on the
+        client. Many apps are only concerned with presenting data to a user and allowing the user to
+        change that data (colloquially known as CRUD apps).
+    *   **Data layer** (known as the model in MVVM terminology) is the source of truth for all
+        application data. It handles business data and logic. As the source of truth, it's the only
+        place that application data should be updated. It is responsible for consuming data from
+        various external APIs, exposing that data to the UI, handling events from the UI that
+        require data to be updated, and sending update requests to those external APIs as needed.
+        The data layer typically has two main components: repositories and services.
+        *   **Repositories** are the source of truth for your model data. They contain logic related
+            to that data, such as updating data in response to user events or polling for data from
+            services. Repositories are responsible for synchronizing data when offline capabilities
+            are supported, managing retry logic, and caching data. They transform raw data into
+            domain models, which represent the data the application needs, formatted for consumption
+            by view model classes.
+        *   **Services** are stateless Dart classes that interact with APIs, such as HTTP servers
+            and platform plugins. Their only job is to wrap an external API. Any data your
+            application needs that isn't created inside the application code itself should be
+            fetched from within service classes. There is generally one service class per data
+            source.
+
+    Within each layer, you should further separate your application by feature or functionality. For
+    example, your application's authentication logic should be in a different class than the search
+    logic.
+
+    The Flutter team's recommended app architecture includes common architectural principles, MVVM
+    and state management, dependency injection, and common design patterns for writing robust
+    Flutter applications.
+    
+  resources:
+    - https://docs.flutter.dev/app-architecture
+    - https://docs.flutter.dev/app-architecture/concepts
+    - https://docs.flutter.dev/app-architecture/guide
+    - https://docs.flutter.dev/resources/architectural-overview
+    - https://docs.flutter.dev/app-architecture/recommendations
+    - https://docs.flutter.dev/app-architecture/design-patterns
+    - https://docs.flutter.dev/app-architecture/case-study
+    - https://docs.flutter.dev/app-architecture/case-study/data-layer
+    - https://docs.flutter.dev/app-architecture/design-patterns/key-value-data
+    - https://docs.flutter.dev/learn/pathway/how-flutter-works
