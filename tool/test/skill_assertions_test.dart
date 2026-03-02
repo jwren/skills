@@ -21,7 +21,7 @@ void main() {
           reason: 'skills directory should exist',
         );
       },
-      skip: 'these assertions need to be moved to the generation script',
+      skip: 'these tests need to be moved out of these tests, not all skills will be written to this directory',
     );
 
     final skillDirs = skillsDir.listSync().whereType<Directory>();
