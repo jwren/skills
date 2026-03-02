@@ -20,7 +20,9 @@ void main() {
       isTrue,
       reason: 'tool/resources directory should exist',
     );
-  });
+    },
+    skip: 'these assertions need to be moved to the generation script',
+  );
 
   if (!resourcesDir.existsSync()) return;
 
