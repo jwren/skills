@@ -45,7 +45,7 @@ abstract class BaseSkillCommand extends Command {
 
   /// The logger for this command.
   final Logger logger;
-  
+
   /// Testing override for Platform.environment
   final Map<String, String>? environmentOverride;
 
