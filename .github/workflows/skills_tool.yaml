@@ -1,0 +1,48 @@
+name: skills_tool
+permissions: read-all
+
+on:
+  # Run CI on all PRs (against any branch) and on pushes to the main branch.
+  pull_request:
+    paths:
+      - '.github/workflows/skills_tool.yaml'
+      - 'tool/**'
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/skills_tool.yaml'
+      - 'tool/**'
+  schedule:
+    - cron: '0 0 * * 0' # weekly
+
+defaults:
+  run:
+    working-directory: tool
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        sdk:
+          - stable
+          - dev
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: ${{ matrix.sdk }}
+
+      - run: dart pub get
+      
+      - run: dart analyze --fatal-infos
+      
+      - run: dart format --output=none --set-exit-if-changed .
+        if: ${{ matrix.sdk == 'dev' }}
+
+      - run: dart test
