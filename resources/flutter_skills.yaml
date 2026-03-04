@@ -831,3 +831,149 @@
     - https://docs.flutter.dev/get-started/fundamentals/local-caching
     - https://docs.flutter.dev/learn/pathway
     - https://docs.flutter.dev/reference/flutter-cli
+- name: flutter-databases
+  description: Work with databases
+  instructions: |
+    Databases are a crucial component of an application's data layer, which
+    serves as the source of truth for all application data. This data layer,
+    also known as the model in MVVM terminology, is the only place where
+    application data should be updated. It is responsible for consuming data
+    from external APIs, exposing data to the UI, handling UI events that require
+    data updates, and sending update requests to external APIs. The data layer
+    typically consists of repositories and services.
+    
+    Repositories are the source of truth for application data and contain logic
+    related to that data, such as updating data in response to user events or
+    polling for data from services. They are responsible for presenting local or
+    remote data and should be the only place where data can be modified.
+    Repositories transform raw data from services into domain models, which are
+    data models containing only the information needed by the rest of the app. A
+    service can be used by any number of repositories, and a repository can use
+    multiple services. For example, a `BookingRepository` might take an
+    `ApiClient` service as input to get and update raw data from a server. It's
+    important that the service is a private member so the UI layer cannot bypass
+    the repository and call a service directly. In offline-first applications,
+    repositories combine different local and remote data sources to provide a
+    single access point for data, regardless of device connectivity.
+    
+    Databases are particularly useful for persisting and querying large amounts
+    of data on a local device, offering faster inserts, updates, and queries
+    compared to other local persistence solutions. Flutter applications can
+    utilize SQLite databases through the `sqflite` plugin. To work with SQLite
+    databases, you need to add the `sqflite` and `path` packages as
+    dependencies. The `path` package helps define the storage location for the
+    database on disk. When using SQLite, you typically define a data model
+    (e.g., a `Dog` data model with `id`, `name`, and `age`), open the database,
+    create tables (e.g., a `dogs` table), and then perform operations like
+    inserting, retrieving, updating, and deleting data. The `id` is often used
+    as the primary key for a table to improve query and update times.
+    
+    For managing data persistence, a `TodoRepository` might act as the source of
+    truth for ToDo items, using a `DatabaseService` internally to access an SQL
+    database via the `sqflite` package. This `DatabaseService` can also be
+    implemented using other storage packages like `sqlite3`, `drift`, or cloud
+    solutions like `firebase_database`. The `TodoRepository` would handle
+    methods like `fetchTodos()`, `createTodo()`, and `deleteTodo()`, ensuring
+    the database is open before each request.
+
+    For caching data, various strategies exist:
+      *   **`shared_preferences`**: A Flutter plugin that wraps platform-specific
+          key-value storage, suitable for small data sizes.
+      *   **File system**: For scenarios where `shared_preferences` is
+          insufficient, caching data with the device's file system can be
+          explored.
+      *   **On-device databases**: This is the most robust solution for local data
+          caching, offering significantly improved performance for large datasets
+          compared to simple files. Both relational (like SQLite, `drift`) and
+          non-relational (like `hive_ce`, `isar_community`) databases are
+          available.
+      *   **Remote Caching**: A lightweight caching system specifically for API
+          responses.
+      *   **Image Caching**: For images, the `cached_network_image` package can be
+          used to direct the Flutter app to store images on the file system.
+
+  resources:
+    - https://docs.flutter.dev/app-architecture/case-study/data-layer
+    - https://docs.flutter.dev/app-architecture/concepts
+    - https://docs.flutter.dev/app-architecture/design-patterns/key-value-data
+    - https://docs.flutter.dev/app-architecture/design-patterns/offline-first
+    - https://docs.flutter.dev/app-architecture/design-patterns/sql
+    - https://docs.flutter.dev/app-architecture/guide
+    - https://docs.flutter.dev/app-architecture/recommendations
+    - https://docs.flutter.dev/cookbook/forms/validation
+    - https://docs.flutter.dev/cookbook/lists/long-lists
+    - https://docs.flutter.dev/cookbook/lists/mixed-list
+    - https://docs.flutter.dev/cookbook/networking/fetch-data
+    - https://docs.flutter.dev/cookbook/persistence/sqlite
+    - https://docs.flutter.dev/cookbook/testing/unit/mocking
+    - https://docs.flutter.dev/data-and-backend
+    - https://docs.flutter.dev/get-started/fundamentals/local-caching
+    - https://docs.flutter.dev/resources/architectural-overview
+- name: flutter-caching
+  description: Cache data
+  instructions: |
+    Caching is a technique for retaining application data to show again at a
+    future time, rather than repeatedly loading it from a remote server. This
+    can prevent users from waiting for data to load every time they relaunch an
+    app.
+
+    All caching strategies involve a three-step operation: checking if the cache
+    contains the desired data, loading the data if the cache is empty, and then
+    returning the value in the cache. When the cache already contains the
+    desired information, it's called a "cache hit". If the cache is empty and
+    data needs to be loaded from the original source, it's a "cache miss".
+
+    There are different types of caching:
+    *   **Local Caching** involves storing data on the device.
+        *   **In-memory caching** stores data in memory, but this data will not
+            persist beyond a single user session.
+        *   **Persistent caches** store data on the device's hard drive to
+            ensure performance benefits on fresh application launches.
+        *   **`shared_preferences`** is a Flutter plugin that uses
+            platform-specific key-value storage, suitable for small data sizes.
+        *   **File system caching** is an option when `shared_preferences` is
+            insufficient for larger data. The `path_provider` package can be
+            used to access common file system locations like temporary
+            directories (which the system can clear) or documents directories
+            (which persist until the app is deleted).
+        *   **On-device databases** (relational or non-relational) offer
+            significantly improved performance for large datasets compared to
+            simple files. Examples include SQLite, Drift, Hive CE, and Isar
+            Community.
+        *   **Image caching** can be handled with the `cached_network_image`
+            package, which uses the file system to store images. Image I/O can
+            be expensive, so caching provides snapshots of complex hierarchies
+            for easier rendering in subsequent frames. However, raster cache
+            entries are expensive to construct and use a lot of GPU memory, so
+            images should only be cached when absolutely necessary.
+    *   **State restoration** is a pattern where aspects of a user's session,
+        such as navigation stacks, scroll positions, and form progress, are
+        persisted. Flutter's built-in state restoration syncs data from its
+        Element tree with the Flutter engine, which then caches it in
+        platform-specific storage.
+    *   **FlutterEngine caching** can minimize Flutter's initialization time
+        when adding Flutter screens to an Android app. By default, each
+        `FlutterActivity` creates its own `FlutterEngine`, which has a
+        non-trivial warm-up time. A pre-warmed, cached `FlutterEngine` can be
+        used instead.
+
+    Caching can also be used to optimize widget rendering. While generally
+    preferable to rely on caching widgets, comparing properties of leaf widgets
+    (widgets with no children) can be more efficient than rebuilding them if
+    they rarely change. However, overriding `operator ==` can lead to
+    performance degradation.
+  resources:
+    - https://docs.flutter.dev/add-to-app/android/add-flutter-fragment/index.html.md
+    - https://docs.flutter.dev/add-to-app/android/add-flutter-screen
+    - https://docs.flutter.dev/app-architecture/design-patterns/offline-first
+    - https://docs.flutter.dev/cookbook/persistence/reading-writing-files
+    - https://docs.flutter.dev/cookbook/persistence/sqlite
+    - https://docs.flutter.dev/get-started/fundamentals
+    - https://docs.flutter.dev/get-started/fundamentals/local-caching
+    - https://docs.flutter.dev/learn/pathway
+    - https://docs.flutter.dev/perf/best-practices
+    - https://docs.flutter.dev/perf/ui-performance
+    - https://docs.flutter.dev/platform-integration/web/faq
+    - https://docs.flutter.dev/release/breaking-changes/image-cache-and-provider
+    - https://docs.flutter.dev/release/breaking-changes/imagecache-large-images
+    - https://docs.flutter.dev/release/breaking-changes/scroll-cache-extent
