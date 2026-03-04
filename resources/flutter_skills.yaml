@@ -778,3 +778,56 @@
     - https://docs.flutter.dev/learn/pathway/tutorial/http-requests
     - https://docs.flutter.dev/release/breaking-changes/asset-manifest-dot-json
     - https://docs.flutter.dev/release/breaking-changes/network-policy-ios-android
+- name: flutter-databases-and-caching
+  description: Work with databases and cache data
+  instructions: |
+    Databases generally offer faster inserts, updates, and queries compared to
+    other local persistence solutions. Flutter applications can utilize SQLite
+    databases through the `sqflite` plugin. To work with SQLite databases, you
+    need to import the `sqflite` and `path` packages. The `sqflite` package
+    provides classes and functions for interacting with a SQLite database, while
+    the `path` package helps define the database's storage location on disk.
+  
+    The process of using `sqflite` typically involves adding dependencies,
+    defining a data model (e.g., `Dog`), opening the database, creating tables,
+    and then performing operations like inserting, retrieving, updating, and
+    deleting data. For instance, to insert a `Dog` into the database, you can
+    use `db.insert()`. Retrieving data involves running a query against a table,
+    which returns a `List<Map>`, and then converting this list into a list of
+    your data model objects (e.g., `List<Dog>`). Updating a record involves
+    using `db.update()` with a `where` clause to specify which record to update.
+    Similarly, deleting a record uses `db.delete()` with a `where` clause.
+    Database operations, like network calls, are typically I/O-bound and can be
+    handled asynchronously using `async` and `await` in Dart.
+
+    Caching is a technique for retaining application data to show again at a
+    future time, rather than repeatedly loading it from a remote server. The
+    basic caching strategy involves three steps: checking if the cache already
+    contains the desired data, loading the data if the cache is empty, and then
+    returning the value from the cache. A "cache hit" occurs when the desired
+    information is found in the cache, avoiding the need to load it from the
+    original source. A "cache miss" happens when the cache is empty, requiring
+    the data to be loaded from the source and then saved to the cache for future
+    use.
+  
+    There are various ways to implement caching, including in-memory caching,
+    persistent caching, and using different storage mechanisms. In-memory
+    caching stores data only for the duration of a single user session. For data
+    to persist across app launches, "persistent caches" are needed, which store
+    data on the device's hard drive. Persistent caching strategies include using
+    `shared_preferences` for small data sizes, the device's file system for
+    larger data, or an on-device database for significantly improved
+    performance, especially with large datasets. Databases, whether relational
+    or non-relational, offer dramatically improved performance over simple files
+    for caching.
+  resources:
+    - https://docs.flutter.dev/app-architecture/case-study/data-layer
+    - https://docs.flutter.dev/app-architecture/design-patterns/offline-first
+    - https://docs.flutter.dev/app-architecture/design-patterns/sql
+    - https://docs.flutter.dev/cookbook/navigation/passing-data
+    - https://docs.flutter.dev/cookbook/networking/fetch-data
+    - https://docs.flutter.dev/cookbook/persistence/sqlite
+    - https://docs.flutter.dev/get-started/flutter-for/android-devs?q=services-iot-app-development-company
+    - https://docs.flutter.dev/get-started/fundamentals/local-caching
+    - https://docs.flutter.dev/learn/pathway
+    - https://docs.flutter.dev/reference/flutter-cli
