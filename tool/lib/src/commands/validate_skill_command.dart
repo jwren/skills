@@ -103,6 +103,16 @@ class ValidateSkillCommand extends BaseSkillCommand {
           'Unknown';
 
       // Compare
+      final dryRun = argResults?['dry-run'] as bool? ?? false;
+      if (dryRun) {
+        logger
+          ..info('  [DRY RUN] Would validate skill: ${skill.name}')
+          ..info(
+            '  [DRY RUN] existing file size: ${existingSkillFileContent.length} characters -> new fetched content size: ${markdown.length} characters.',
+          );
+        return;
+      }
+
       logger.info('  Comparing versions...');
       final result = await gemini.validateExistingSkillContent(
         markdown,

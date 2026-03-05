@@ -17,11 +17,11 @@ void main() {
   group('GenerateSkillsCommand', () {
     late CommandRunner<void> runner;
     late Directory tempDir;
-    late File videoFile;
+    late File inputYamlFile;
 
     setUp(() async {
       tempDir = await Directory.systemTemp.createTemp('skills_gen_test');
-      videoFile = File(p.join(tempDir.path, 'input.yaml'));
+      inputYamlFile = File(p.join(tempDir.path, 'input.yaml'));
       runner = CommandRunner<void>('skills', 'Test runner');
     });
 
@@ -31,7 +31,7 @@ void main() {
 
     test('generates skill from YAML input with dart-docs- prefix', () async {
       // Create input YAML in a file named dart_dev.yaml to trigger prefixing
-      videoFile = File(p.join(tempDir.path, 'dart_dev.yaml'));
+      inputYamlFile = File(p.join(tempDir.path, 'dart_dev.yaml'));
       final inputData = [
         {
           'name': 'foo',
@@ -44,7 +44,7 @@ void main() {
           'resources': ['https://example.com/'],
         },
       ];
-      videoFile.writeAsStringSync(jsonEncode(inputData));
+      inputYamlFile.writeAsStringSync(jsonEncode(inputData));
 
       final geminiRequests = <String>[];
       // Mock HTTP Client
@@ -90,7 +90,7 @@ void main() {
       runner.addCommand(command);
 
       // Run command
-      await runner.run(['generate-skill', videoFile.path]);
+      await runner.run(['generate-skill', inputYamlFile.path]);
 
       // Just verify file creation for now
       final skillDirFoo = Directory(p.join(tempDir.path, 'foo'));
@@ -108,7 +108,7 @@ void main() {
     });
 
     test('logs progress and summary', () async {
-      videoFile = File(p.join(tempDir.path, 'dart_dev.yaml'));
+      inputYamlFile = File(p.join(tempDir.path, 'dart_dev.yaml'));
       final inputData = [
         {
           'name': 'success',
@@ -121,7 +121,7 @@ void main() {
           'resources': ['https://example.com/fail_404'],
         },
       ];
-      videoFile.writeAsStringSync(jsonEncode(inputData));
+      inputYamlFile.writeAsStringSync(jsonEncode(inputData));
 
       final logs = <String>[];
       final sub = Logger.root.onRecord.listen((record) {
@@ -165,7 +165,7 @@ void main() {
       );
       runner.addCommand(command);
 
-      await runner.run(['generate-skill', videoFile.path]);
+      await runner.run(['generate-skill', inputYamlFile.path]);
 
       // Verify Logs
       expect(logs, contains(contains('Generating skill: success...')));
@@ -337,7 +337,7 @@ void main() {
             'resources': <String>[],
           },
         ];
-        final videoFile = File(p.join(tempDir.path, 'empty_fetch.yaml'))
+        final inputYamlFile = File(p.join(tempDir.path, 'empty_fetch.yaml'))
           ..writeAsStringSync(jsonEncode(inputData));
 
         final logs = <String>[];
@@ -357,7 +357,7 @@ void main() {
         );
         runner.addCommand(command);
 
-        await runner.run(['generate-skill', videoFile.path]);
+        await runner.run(['generate-skill', inputYamlFile.path]);
         expect(
           logs,
           contains('  No content fetched for empty-fetch. Skipping.'),
@@ -373,7 +373,7 @@ void main() {
           'resources': ['https://example.com/source'],
         },
       ];
-      final videoFile = File(p.join(tempDir.path, 'empty_gemini.yaml'))
+      final inputYamlFile = File(p.join(tempDir.path, 'empty_gemini.yaml'))
         ..writeAsStringSync(jsonEncode(inputData));
 
       final logs = <String>[];
@@ -412,7 +412,7 @@ void main() {
       );
       runner.addCommand(command);
 
-      await runner.run(['generate-skill', videoFile.path]);
+      await runner.run(['generate-skill', inputYamlFile.path]);
       expect(logs, contains('  Failed to generate content for empty-gemini'));
     });
 
@@ -424,7 +424,7 @@ void main() {
           'resources': ['https://example.com/source'],
         },
       ];
-      final videoFile = File(p.join(tempDir.path, 'exception_gemini.yaml'))
+      final inputYamlFile = File(p.join(tempDir.path, 'exception_gemini.yaml'))
         ..writeAsStringSync(jsonEncode(inputData));
 
       final logs = <String>[];
@@ -444,7 +444,7 @@ void main() {
       );
       runner.addCommand(command);
 
-      await runner.run(['generate-skill', videoFile.path]);
+      await runner.run(['generate-skill', inputYamlFile.path]);
       expect(
         logs,
         contains(
@@ -453,6 +453,67 @@ void main() {
           ),
         ),
       );
+    });
+
+    test('dry run fetches content but skips Gemini and file writes', () async {
+      final inputData = [
+        {
+          'name': 'dry-run-skill',
+          'description': 'Description',
+          'resources': ['https://example.com/source'],
+        },
+      ];
+      final inputYamlFile = File(p.join(tempDir.path, 'dry_run.yaml'))
+        ..writeAsStringSync(jsonEncode(inputData));
+
+      final logs = <String>[];
+      final sub = Logger.root.onRecord.listen(
+        (record) => logs.add(record.message),
+      );
+      addTearDown(sub.cancel);
+
+      var geminiCalled = false;
+      final mockClient = MockClient((request) async {
+        if (request.url.toString() == 'https://example.com/source') {
+          return http.Response('<html>Content</html>', 200);
+        }
+        if (request.url.toString().contains('generativelanguage')) {
+          geminiCalled = true;
+          return http.Response(
+            jsonEncode({
+              'candidates': [
+                {
+                  'content': {
+                    'parts': [
+                      {'text': 'Gen'},
+                    ],
+                  },
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('Error', 500);
+      });
+
+      final command = GenerateSkillCommand(
+        environment: {'GEMINI_API_KEY': 'test-key'},
+        httpClient: mockClient,
+        outputDir: tempDir,
+      );
+      runner.addCommand(command);
+
+      await runner.run(['generate-skill', '--dry-run', inputYamlFile.path]);
+
+      expect(geminiCalled, isFalse);
+      expect(
+        logs,
+        contains(contains('[DRY RUN] Would generate skill: dry-run-skill')),
+      );
+
+      final skillDir = Directory(p.join(tempDir.path, 'dry-run-skill'));
+      expect(skillDir.existsSync(), isFalse);
     });
   });
 }

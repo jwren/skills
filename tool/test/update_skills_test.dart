@@ -174,5 +174,68 @@ void main() {
         );
       },
     );
+
+    test('dry run fetches content but skips Gemini and file writes', () async {
+      final inputData = [
+        {
+          'name': 'dry-update',
+          'description': 'Description',
+          'resources': ['https://example.com/source'],
+        },
+      ];
+      inputYamlFile.writeAsStringSync(jsonEncode(inputData));
+
+      final skillDir = Directory(p.join(tempDir.path, 'dry-update'))
+        ..createSync();
+      final skillFile = File(p.join(skillDir.path, 'SKILL.md'))
+        ..writeAsStringSync('Existing content');
+
+      final logs = <String>[];
+      final sub = Logger.root.onRecord.listen((record) {
+        logs.add(record.message);
+      });
+      addTearDown(sub.cancel);
+
+      var geminiCalled = false;
+      final mockClient = MockClient((request) async {
+        if (request.url.toString() == 'https://example.com/source') {
+          return http.Response('<html>New Content</html>', 200);
+        }
+        if (request.url.toString().contains('generativelanguage')) {
+          geminiCalled = true;
+          return http.Response(
+            jsonEncode({
+              'candidates': [
+                {
+                  'content': {
+                    'parts': [
+                      {'text': 'Gen'},
+                    ],
+                  },
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('Error', 500);
+      });
+
+      final command = UpdateSkillCommand(
+        environment: {'GEMINI_API_KEY': 'test-key'},
+        httpClient: mockClient,
+        outputDir: tempDir,
+      );
+      runner.addCommand(command);
+
+      await runner.run(['update-skill', '--dry-run', inputYamlFile.path]);
+
+      expect(geminiCalled, isFalse);
+      expect(
+        logs,
+        contains(contains('[DRY RUN] Would update skill: dry-update')),
+      );
+      expect(skillFile.readAsStringSync(), equals('Existing content'));
+    });
   });
 }

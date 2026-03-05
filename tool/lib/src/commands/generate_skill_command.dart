@@ -61,6 +61,16 @@ class GenerateSkillCommand extends BaseSkillCommand {
         return;
       }
 
+      final dryRun = argResults?['dry-run'] as bool? ?? false;
+      if (dryRun) {
+        logger
+          ..info('  [DRY RUN] Would generate skill: ${skill.name}')
+          ..info(
+            '  [DRY RUN] Prompt size: ${combinedMarkdown.length} characters.',
+          );
+        return;
+      }
+
       final generatedContent = await gemini.generateSkillContent(
         combinedMarkdown,
         skill.name,

@@ -34,6 +34,13 @@ abstract class BaseSkillCommand extends Command<void> {
         help:
             'The token budget for the model to "think". Defaults to ${GeminiService.defaultThinkingBudget} (recommended for technical documentation).',
         defaultsTo: GeminiService.defaultThinkingBudget.toString(),
+      )
+      ..addFlag(
+        'dry-run',
+        abbr: 'n',
+        help:
+            'Simulate the command without making API calls or modifying files.',
+        negatable: false,
       );
   }
 

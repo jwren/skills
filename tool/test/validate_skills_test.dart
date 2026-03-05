@@ -664,5 +664,71 @@ Content
       await runner.run(['validate-skill', configFile.path]);
       expect(logs, contains(contains('Validation report written to')));
     });
+
+    test('dry run fetches content but skips gemini and file writes', () async {
+      const skillName = 'dry-validate';
+      final skillDir = Directory(p.join(skillsDir.path, skillName));
+      await skillDir.create();
+      File(
+        p.join(skillDir.path, 'SKILL.md'),
+      ).writeAsStringSync('name: $skillName\nExisting content');
+
+      final configFile = File(p.join(tempDir.path, 'config.yaml'));
+      await configFile.writeAsString(
+        jsonEncode([
+          {
+            'name': skillName,
+            'description': 'Desc',
+            'resources': ['https://example.com/source'],
+          },
+        ]),
+      );
+
+      var geminiCalled = false;
+      final mockClient = MockClient((request) async {
+        if (request.url.toString() == 'https://example.com/source') {
+          return http.Response('# Source', 200);
+        }
+        if (request.url.toString().contains('generativelanguage')) {
+          geminiCalled = true;
+          return http.Response(
+            jsonEncode({
+              'candidates': [
+                {
+                  'content': {
+                    'parts': [
+                      {'text': 'Generated Content\nGrade: 100'},
+                    ],
+                  },
+                },
+              ],
+            }),
+            200,
+          );
+        }
+        return http.Response('Not Found', 404);
+      });
+
+      runner = CommandRunner<void>('skills', 'Test runner')
+        ..addCommand(
+          ValidateSkillCommand(
+            environment: {'GEMINI_API_KEY': 'test-key'},
+            outputDir: skillsDir,
+            validationDir: validationDir,
+            httpClient: mockClient,
+          ),
+        );
+
+      await runner.run(['validate-skill', '--dry-run', configFile.path]);
+
+      expect(geminiCalled, isFalse);
+      expect(
+        logs,
+        contains(contains('[DRY RUN] Would validate skill: $skillName')),
+      );
+
+      final valDir = Directory(p.join(validationDir.path, skillName));
+      expect(valDir.existsSync(), isFalse);
+    });
   });
 }

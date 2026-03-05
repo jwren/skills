@@ -72,6 +72,16 @@ class UpdateSkillCommand extends BaseSkillCommand {
         return;
       }
 
+      final dryRun = argResults?['dry-run'] as bool? ?? false;
+      if (dryRun) {
+        logger
+          ..info('  [DRY RUN] Would update skill: ${skill.name}')
+          ..info(
+            '  [DRY RUN] Original file size: ${existingContent.length} characters -> Raw content size: ${combinedMarkdown.length} characters.',
+          );
+        return;
+      }
+
       final generatedContent = await gemini.updateSkillContent(
         existingContent,
         combinedMarkdown,
