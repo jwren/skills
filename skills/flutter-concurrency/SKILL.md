@@ -1,6 +1,6 @@
 ---
 name: "flutter-concurrency"
-description: "Execute long-running tasks in a background thread."
+description: "Execute long-running tasks in a background thread in Flutter"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Wed, 04 Mar 2026 22:25:47 GMT"

@@ -1,6 +1,6 @@
 ---
 name: "flutter-http-and-json"
-description: "Make HTTP requests and encode / decode JSON"
+description: "Make HTTP requests and encode / decode JSON in a Flutter app"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Wed, 04 Mar 2026 17:55:17 GMT"

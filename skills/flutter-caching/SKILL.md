@@ -1,6 +1,6 @@
 ---
 name: "flutter-caching"
-description: "Cache data"
+description: "Cache data in a Flutter app"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Wed, 04 Mar 2026 18:37:11 GMT"

@@ -1,6 +1,6 @@
 ---
 name: "flutter-localization"
-description: "Configure your app to support different languages and regions"
+description: "Configure your Flutter app to support different languages and regions"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Tue, 03 Mar 2026 18:07:09 GMT"

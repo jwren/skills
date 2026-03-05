@@ -1,6 +1,6 @@
 ---
 name: "flutter-accessibility"
-description: "Configure your app to support assistive technologies like Screen Readers"
+description: "Configure your Flutter app to support assistive technologies like Screen Readers"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Tue, 03 Mar 2026 19:03:49 GMT"

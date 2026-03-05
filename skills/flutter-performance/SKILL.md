@@ -1,6 +1,6 @@
 ---
 name: "flutter-performance"
-description: "Add unit tests, widget tests, or integration tests"
+description: "Optimize the performance of your Flutter app"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Wed, 04 Mar 2026 21:54:56 GMT"

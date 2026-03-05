@@ -1,6 +1,6 @@
 ---
 name: "flutter-native-interop"
-description: "Interoperate with native APIs on Android, iOS, and the web"
+description: "Interoperate with native APIs in a Flutter app on Android, iOS, and the web"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Wed, 04 Mar 2026 19:26:40 GMT"

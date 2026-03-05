@@ -1,6 +1,6 @@
 ---
 name: "flutter-routing-and-navigation"
-description: "Move between or deep link to different screens or \"routes\" within an application"
+description: "Move between or deep link to different screens or routes within a Flutter application"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Mon, 02 Mar 2026 21:33:05 GMT"

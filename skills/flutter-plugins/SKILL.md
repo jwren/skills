@@ -1,6 +1,6 @@
 ---
 name: "flutter-plugins"
-description: "Build a plugin that provides native interop for other apps to use"
+description: "Build a Flutter plugin that provides native interop for other Flutter apps to use"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Wed, 04 Mar 2026 21:07:42 GMT"

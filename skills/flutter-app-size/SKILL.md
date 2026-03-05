@@ -1,6 +1,6 @@
 ---
 name: "flutter-app-size"
-description: "Measure and reduce the size of the app bundle, APK, or IPA"
+description: "Measure and reduce the size of the Flutter app bundle, APK, or IPA"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Wed, 04 Mar 2026 22:08:14 GMT"

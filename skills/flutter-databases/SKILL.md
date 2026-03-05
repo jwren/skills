@@ -1,6 +1,6 @@
 ---
 name: "flutter-databases"
-description: "Work with databases"
+description: "Work with databases in a Flutter app"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Wed, 04 Mar 2026 18:34:08 GMT"

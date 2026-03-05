@@ -1,6 +1,6 @@
 ---
 name: "flutter-animation"
-description: "Add animated effects to your app"
+description: "Add animated effects to your Flutter app"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Mon, 02 Mar 2026 21:40:10 GMT"

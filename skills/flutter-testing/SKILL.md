@@ -1,6 +1,6 @@
 ---
 name: "flutter-testing"
-description: "Add unit tests, widget tests, or integration tests"
+description: "Add Flutter unit tests, widget tests, or integration tests"
 metadata:
   model: "models/gemini-3.1-pro-preview"
   last_modified: "Wed, 04 Mar 2026 21:41:12 GMT"
